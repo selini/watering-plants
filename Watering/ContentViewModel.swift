@@ -16,6 +16,8 @@ class ContentViewModel: ObservableObject {
     private let isSummerKey = "summer"
     private let wateringDateKey = "wateringDate"
     
+    private var cancellables = Set<AnyCancellable>()
+    
     init() {
         handlePublished()
     }
@@ -26,7 +28,7 @@ class ContentViewModel: ObservableObject {
     }
     
     private func handlePublished() {
-        let _ = $isSummer.sink(receiveValue: { [weak self] value in
+        $isSummer.sink(receiveValue: { [weak self] value in
             guard let self else { return }
              if value {
                  self.daysForWatering = "Every other day"
@@ -34,12 +36,12 @@ class ContentViewModel: ObservableObject {
                  self.daysForWatering = "Once a week"
              }
             UserDefaults.standard.set(value, forKey: isSummerKey)
-         })
+        }).store(in: &cancellables)
          
-         let _ = $wateringDate.sink(receiveValue: { [weak self] value in
+        $wateringDate.sink(receiveValue: { [weak self] value in
              guard let self else { return }
              UserDefaults.standard.set(wateringDate, forKey: wateringDateKey)
              wateringDateString = "Last watering date is \(wateringDate.formatted(date: .long, time: .omitted))"
-          })
+          }).store(in: &cancellables)
     }
 }
