@@ -10,22 +10,28 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var viewModel = ContentViewModel()
     var body: some View {
-        VStack() {
-            HStack() {
-                Text("Is Summer?")
-                    .font(.largeTitle)
-                VStack {
+        VStack {
+            Text("Watering The plants")
+                .font(.largeTitle)
+                .multilineTextAlignment(.center)
+            VStack(alignment: .leading) {
+                HStack() {
+                    Text("Is Summer?")
+                        .font(.title)
                     Toggle("", isOn: $viewModel.isSummer)
                 }
+                Text(viewModel.daysForWatering)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                VStack(alignment: .leading) {
+                    DatePicker(selection: $viewModel.wateringDate, in: ...Date.now, displayedComponents: .date) {
+                        Text("Watering Date")
+                    }
+                    Text(viewModel.wateringDateString)
+                }
+                .padding(.top, 20)
+                Spacer()
             }
-           
-            Text(viewModel.daysForWatering)
-            
-            DatePicker(selection: $viewModel.wateringDate, in: ...Date.now, displayedComponents: .date) {
-                Text("Watering Date")
-            }
-            Text(viewModel.wateringDateString)
-            Spacer()
         }
         .padding()
         .onAppear(perform: {
