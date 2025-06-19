@@ -28,20 +28,26 @@ class ContentViewModel: ObservableObject {
     }
     
     private func handlePublished() {
-        $isSummer.sink(receiveValue: { [weak self] value in
+        $isSummer
+            .removeDuplicates()
+            .dropFirst()
+            .sink(receiveValue: { [weak self] value in
             guard let self else { return }
-             if value {
-                 self.daysForWatering = "Every other day"
-             } else {
-                 self.daysForWatering = "Once a week"
-             }
-            UserDefaults.standard.set(value, forKey: isSummerKey)
+            if value {
+                self.daysForWatering = "Every other day"
+            } else {
+                self.daysForWatering = "Once a week"
+            }
+            UserDefaults.standard.setValue(value, forKey: self.isSummerKey)
         }).store(in: &cancellables)
          
-        $wateringDate.sink(receiveValue: { [weak self] value in
+        $wateringDate
+            .removeDuplicates()
+            .dropFirst()
+            .sink(receiveValue: { [weak self] value in
              guard let self else { return }
-             UserDefaults.standard.set(wateringDate, forKey: wateringDateKey)
-             wateringDateString = "Last watering date is \(wateringDate.formatted(date: .long, time: .omitted))"
+             UserDefaults.standard.setValue(value, forKey: wateringDateKey)
+             wateringDateString = "Last watering date is \(value.formatted(date: .long, time: .omitted))"
           }).store(in: &cancellables)
     }
 }

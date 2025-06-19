@@ -18,7 +18,7 @@ struct ContentView: View {
                 HStack() {
                     Text("Is Summer?")
                         .font(.title)
-                    Toggle("", isOn: $viewModel.isSummer)
+                    Toggle("", isOn: $viewModel.isSummer  )
                 }
                 Text(viewModel.daysForWatering)
                     .fontWeight(.bold)
