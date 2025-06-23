@@ -24,7 +24,7 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
                 VStack(alignment: .leading) {
-                    DatePicker(selection: $viewModel.wateringDate, in: ...Date.now, displayedComponents: .date) {
+                    DatePicker(selection: $viewModel.wateringDate, displayedComponents: .date) {
                         Text("Watering Date")
                     }
                     Text(viewModel.wateringDateString)
