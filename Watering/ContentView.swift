@@ -36,6 +36,7 @@ struct ContentView: View {
         .padding()
         .onAppear(perform: {
             viewModel.getSavedValues()
+            viewModel.requestNotificationPermission()
         })
     }
 }

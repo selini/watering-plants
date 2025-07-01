@@ -27,6 +27,11 @@ class ContentViewModel: ObservableObject {
         wateringDate = UserDefaults.standard.object(forKey: wateringDateKey) as? Date ?? .now
     }
     
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: [.alert, .sound, .badge]) { _ , _ in }
+    }
+    
     private func handlePublished() {
         $isSummer
             .removeDuplicates()
@@ -57,6 +62,24 @@ class ContentViewModel: ObservableObject {
             to: wateringDate
         ) {
             nextWateringDateString = "Next watering date is \(nextWateringDate.formatted(date: .long, time: .omitted))"
+            scheduleNotificationOnSpecific(date: nextWateringDate)
         }
+    }
+    
+    private func scheduleNotificationOnSpecific(date: Date) {
+        let content = UNMutableNotificationContent()
+        content.title = "Watering App"
+        content.body = "Please water the plants"
+        content.sound = .default
+        
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        components.hour = 8
+        components.minute = 30
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { _ in }
     }
 }
