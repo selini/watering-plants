@@ -27,7 +27,7 @@ struct ContentView: View {
                     DatePicker(selection: $viewModel.wateringDate, displayedComponents: .date) {
                         Text("Watering Date")
                     }
-                    Text(viewModel.wateringDateString)
+                    Text(viewModel.nextWateringDateString)
                 }
                 .padding(.top, 20)
                 Spacer()

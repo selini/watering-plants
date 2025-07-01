@@ -10,7 +10,7 @@ import Combine
 class ContentViewModel: ObservableObject {
     @Published var isSummer: Bool = false
     @Published var wateringDate: Date = .now
-    @Published var wateringDateString: String = ""
+    @Published var nextWateringDateString: String = ""
     @Published var daysForWatering = ""
     
     private let isSummerKey = "summer"
@@ -31,23 +31,32 @@ class ContentViewModel: ObservableObject {
         $isSummer
             .removeDuplicates()
             .dropFirst()
-            .sink(receiveValue: { [weak self] value in
-            guard let self else { return }
-            if value {
-                self.daysForWatering = "Every other day"
-            } else {
-                self.daysForWatering = "Once a week"
-            }
-            UserDefaults.standard.setValue(value, forKey: self.isSummerKey)
-        }).store(in: &cancellables)
-         
+            .sink(receiveValue: { [weak self] isSummer in
+                guard let self else { return }
+                self.daysForWatering = isSummer ? "Every other day" : "Once a week"
+                UserDefaults.standard.setValue(isSummer, forKey: self.isSummerKey)
+                self.isSummer = isSummer
+                calculateNextWatering()
+            }).store(in: &cancellables)
+        
         $wateringDate
             .removeDuplicates()
             .dropFirst()
-            .sink(receiveValue: { [weak self] value in
-             guard let self else { return }
-             UserDefaults.standard.setValue(value, forKey: wateringDateKey)
-             wateringDateString = "Last watering date is \(value.formatted(date: .long, time: .omitted))"
-          }).store(in: &cancellables)
+            .sink(receiveValue: { [weak self] wateringDate in
+                guard let self else { return }
+                UserDefaults.standard.setValue(wateringDate, forKey: wateringDateKey)
+                self.wateringDate = wateringDate
+                calculateNextWatering()
+            }).store(in: &cancellables)
+    }
+    
+    private func calculateNextWatering() {
+        if let nextWateringDate = Calendar.current.date(
+            byAdding: .day,
+            value: isSummer ? 2 : 7,
+            to: wateringDate
+        ) {
+            nextWateringDateString = "Next watering date is \(nextWateringDate.formatted(date: .long, time: .omitted))"
+        }
     }
 }
