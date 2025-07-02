@@ -77,9 +77,9 @@ class ContentViewModel: ObservableObject {
         components.minute = 30
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-        
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        
-        UNUserNotificationCenter.current().add(request) { _ in }
+        let center = UNUserNotificationCenter.current()
+        center.removeAllPendingNotificationRequests()
+        center.add(request) { _ in }
     }
 }
